@@ -1,0 +1,13 @@
+*.swp
+*.exe
+*.o
+*.bak
+*.bin
+*.bin1
+*.bin2
+*.log
+test/*.wav
+.DS_Store*
+*.Po
+*.plo
+*.Plo
