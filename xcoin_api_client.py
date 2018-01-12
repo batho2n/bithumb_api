@@ -87,7 +87,9 @@ class XCoinAPI:
 
 		url = self.api_url + endpoint;
 		curl_handle.setopt(curl_handle.URL, url);
-		curl_handle.setopt(curl_handle.HTTPHEADER, ['Api-Key: ' + self.api_key, 'Api-Sign: ' + utf8_api_sign, 'Api-Nonce: ' + nonce]);
+		print(type(utf8_api_sign))
+		print(type(nonce))
+		curl_handle.setopt(curl_handle.HTTPHEADER, ['Api-Key: ' + self.api_key, 'Api-Sign: ' + utf8_api_sign.encode('utf8'), 'Api-Nonce: ' + nonce]);
 		curl_handle.setopt(curl_handle.WRITEFUNCTION, self.http_body_callback);
 		curl_handle.perform();
 
