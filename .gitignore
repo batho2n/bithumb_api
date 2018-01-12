@@ -11,3 +11,4 @@ test/*.wav
 *.Po
 *.plo
 *.Plo
+.pyc
