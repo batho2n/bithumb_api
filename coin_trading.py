@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-#
-# @brief XCoin API-call sample script (for Python 2.x, 3.x)
-#
-# @author btckorea
-# @date 2017-04-14
+# -*- coding: utf-8 -*-
+
+# @brief 	Coint Trading File using XCoin API-call(for Python 2.x, 3.x)
+# @author	batho2n
+# @date		2018.01.18
 #
 # @details
 # First, Build and install pycurl with the following commands::
@@ -28,33 +28,22 @@ import sys
 from xcoin_api_client import *
 import pprint
 import getopt
+import time
 
-#575c2465ffba4a5ecfc834997d7804e5	acbc59e9accd146a8bb96b83b65460ef
-api_key = "575c2465ffba4a5ecfc834997d7804e5";
-api_secret = "acbc59e9accd146a8bb96b83b65460ef";
-api = XCoinAPI(api_key, api_secret);
-rgParams = {
-	"order_currency" 	: "XRP",
-	"payment_currency" 	: "KRW",
-	"offset"			: 0,
-	"count"				: 1,
-	"searchGb"			: "1",
-	"currency"			: "XRP",
-	"units"				: 10
-};
-
-
-#
-# Public API
-# /public/ticker
-# /public/recent_ticker
-# /public/orderbook
-# /public/recent_transactions
-
+def Usage (argv):
+	print argv + " [options]"
+	print ""
+	print "  [Ex] " + argv + " -t sell -c BTC -u 1.42"
+	print "  [options]"
+	print "      -t		거래 방법 선택 (sell, buy, wallet)"
+	print "      -c		거래 코인 선택 (BTC, ETH, DASH, LTC, ETC, XRP, BCH, "
+	print "        						XMR, ZEC, QTUM, BTG, EOS)"
+	print "      -u		거래량(코인 기준, 거래최소량 있음, 소수4자리까지 가능)"
+	
 def Check_Curr_Status(API):
-	print(type(rgParams))
+	print(type(private_params))
 	print("Bithumb Public API URI('/public/ticker') Request...");
-	result = api.xcoinApiCall(API, rgParams);
+	result = api.xcoinApiCall(API, private_params);
 	print result
 	print "- Status Code: " + result["status"]
 	print "- Opening Price: " + result["data"]["opening_price"]
@@ -65,110 +54,110 @@ def Check_Curr_Status(API):
 	return 0
 
 
-#
-# Private API
-#
-# endpoint => parameters
-# /info/current
-# /info/account
-# /info/balance
-# /info/wallet_address
+def Print_Api_Error (result):
+	print "Status: " + str(result["status"])
+	print "Message: " + result["message"]
+	return
 
-#print("Bithumb Private API URI('/info/account') Request...");
-#result = api.xcoinApiCall("/info/account", rgParams);
-#print("- Status Code: " + result["status"]);
-#print("- Created: " + result["data"]["created"]);
-#print("- Account ID: " + result["data"]["account_id"]);
-#print("- Trade Fee: " + result["data"]["trade_fee"]);
-#print("- Balance: " + result["data"]["balance"]);
-#
-#
-#print("Bithumb Private API URI('/info/balance') Request...");
-#result = api.xcoinApiCall("/info/balance", rgParams);
-#print(result)
-#print("- Status Code: " + result["status"]);
-#print result["data"]
-#print("- Total KRW " + result["data"]);
+def Print_Wallet(result, currency):
+	print ""
+	print " = = = Wallet = = ="
+	print currency + ": " + result["data"]["available_"+currency.lower()]
+	print "KRW: " + str(format(result["data"]["available_krw"], ","))
+	return
 
-def User_Transactions(API):
-	print "Bithumb Private API URI(" + API + ") Request..."
-	result = api.xcoinApiCall(API, rgParams)
-	print result
+def API_Init(api_key, api_secret):
+	return XCoinAPI(api_key, api_secret);
 
-	return 0
-
-def User_Transactions(API):
-	print "Bithumb Private API URI(" + API + ") Request..."
-	result = api.xcoinApiCall(API, rgParams)
-	print result
-
-	return 0
-
-def Market_Sell():
-	print "Bithumb Private API URI('/info/market_sell') Request..."
-	result = api.xcoinApiCall("/info/market_sell", rgParams)
+def Check_Wallet(api, private_params, API):
+	result = api.xcoinApiCall(API, private_params)
 	if result["status"] != "0000":
-		print "Status: " + result["status"]
-		print "Message: " + result["message"]
+		Print_Api_Error(result)
 		return -1
 	else:
-		print "order_id: " + result["data"]["order_id"]
-		print "cont_id: " + result["data"]["cont_id"]
-		print "units: " + result["data"]["units"]
-		print "price: " + result["data"]["price"] + " KRW / 1 " +  rParams["currency"]
-		print "total: " + result["data"]["total"] + " KRW"
+		Print_Wallet(result, private_params["currency"])
+		return 0
 
-	return 0
-
-def Market_Buy():
-	print "Bithumb Private API URI('/info/market_sell') Request..."
-	result = api.xcoinApiCall("/info/market_sell", rgParams)
+def Trading(api, private_params, API):
+	print "Bithumb Private API URI(" + API + ") Request..."
+	
+	result = api.xcoinApiCall(API, private_params)
 	if result["status"] != "0000":
-		print "Status: " + result["status"]
-		print "Message: " + result["message"]
+		Print_Api_Error(result)
 		return -1
 	else:
-		print "order_id: " + result["data"]["order_id"]
-		print "cont_id: " + result["data"]["cont_id"]
-		print "units: " + result["data"]["units"]
-		print "price: " + result["data"]["price"] + " KRW / 1 " +  rParams["currency"]
-		print "total: " + result["data"]["total"] + " KRW"
+		print "order_id: " + result["order_id"]
+		print "units: " + result["data"][0]["units"]
+		print "price: " + result["data"][0]["price"] + " KRW / 1 " +  private_params["currency"]
 
 	return 0
 
 if __name__ == '__main__':
 
 	coin = 'XRP'
-	vol = ''
-	sale = ''
-	
-	options, args = getopt.getopt(sys.argv[1:], 'c:w:m:')
+	vol = ""
+	sale = ""
+	API = ""
+	unit = ""
+	err_code = 0
+	if len(sys.argv) < 5:
+		Usage(sys.argv[0])
+		sys.exit(0)
+
+	options, args = getopt.getopt(sys.argv[1:], 'c:u:t:h')
 	for opt, p in options:
 		if opt == '-c':
 			coin = p
-		elif opt == '-w':
-			vol = p
-		elif opt == '-m':
-			sale = p
+		elif opt == '-u':
+			unit = p
+		elif opt == '-t':
+			trading = p
+		elif opt == '-h':
+			Usage(sys.argv[0])
+			sys.exit(0)
 		else:
 			print 'Unknown option'
+			Usage(sys.argv[0])
 			sys.exit(0)
 
+
 	print ""
-	print "	[Trading Coin: " + coin + ",  Trading mode: " + sale + ", Trading volume: " + krw + "KRW]"
-	print ""
-	print "=====Starting Trading======"
-	print ""
+	print " Trading Coin: " + coin + ",  Trading mode: " + trading+ ", Trading volume: " + unit + " " + coin
+	print " BITHUMB API Initialization"
+	api_key = "575c2465ffba4a5ecfc834997d7804e5";
+	api_secret = "acbc59e9accd146a8bb96b83b65460ef";
+	api = API_Init(api_key, api_secret)
 	
-	if sale == "sell":
-		err_code = Market_Sell()
-		if err_code != 0:
-			print "[ERR] Market_Sell() " + str(err_code)
-			sys.exit(0)
-	elif sale == "buy":
-		err_code = Market_buy
-		if err_code != 0:
-			print "[ERR] Market_Buy() " + str(err_code)
-			sys.exit(0)
+	print "     =====Starting Trading======"
+	print ""
 
+	if trading != "wallet":
+		private_params = {
+			"currency"			: coin,
+			"units"				: float(unit)
+		};
+		if trading == "sell":
+			API = "/info/market_sell"
+		elif trading == "buy":
+			API = "/info/market_buy"
+
+		print ""
+		print " Trading !!! "
+		for i in range(10):
+			err_code = Trading(	api, private_params, API)
+			if err_code != 0:
+				print "[ERR] Trading() " + str(err_code)
+				time.sleep(0.05)
+			else:
+				break
+		
+	wallet_params = {
+		"currency"				: coin
+	};
+	err_code = Check_Wallet(api, wallet_params, "/info/balance")
+	if err_code != 0:
+		print "[ERR] Check_Wallet() " + str(err_code)
+
+	print ""
+	print "     =====Finish Trading======"
 	sys.exit(0)
