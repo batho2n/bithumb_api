@@ -7,3 +7,6 @@ build:
 
 exec:
 	./xcoin_api_client
+
+
+#sudo yum install -y openssl-devel
