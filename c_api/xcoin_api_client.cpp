@@ -17,9 +17,9 @@ size_t size;
 char *data;
 };
 
-#define _API_HOST "https://api.bithumb.com"
-#define _API_KEY "api connect key"
-#define _API_SECRET "api secret key"
+#define _API_HOST 	"https://api.bithumb.com"
+#define _API_KEY 	"575c2465ffba4a5ecfc834997d7804e5"
+#define _API_SECRET	"acbc59e9accd146a8bb96b83b65460ef"
 
 /* {{{ base64 tables */
 static const char base64_table[] = {
@@ -215,7 +215,7 @@ char *api_request(char *endpoint, char *post_data)
 	char url[strlen(_API_HOST) + strlen(endpoint) + 1];
 	sprintf(url, "%s%s", _API_HOST, endpoint);
 	
-	//printf("url : [%s]\n", url);
+	printf("url : [%s]\n", url);
 
 	struct timeval time;
 	gettimeofday( &time, NULL );
@@ -238,7 +238,7 @@ char *api_request(char *endpoint, char *post_data)
 	char parChar = chr(1);
 	sprintf(strData, "%s%c%s%c%s", endpoint, parChar, strEncode, parChar, mtStr);
 
-	//printf("strData : %s \n", strData);
+	printf("strData : %s \n", strData);
 
 	char *hash_str;
 	unsigned int len = 128;
@@ -247,13 +247,13 @@ char *api_request(char *endpoint, char *post_data)
 	
 	hash_sha512(hash_str, (unsigned char*)&strData, (char*)&_API_SECRET);
 
-	//printf("%s \n", hash_str);
+	printf("hsh_str: %s \n", hash_str);
 
 	unsigned char *base64_str;
 	int ret_length;
 	base64_str = base64_encode((unsigned char*)hash_str, strlen(hash_str), &ret_length);
 	
-	//printf("%s\n", base64_str);
+	printf("base64_str: %s\n", base64_str);
 
 	
 	CURL *curl;
@@ -277,6 +277,7 @@ char *api_request(char *endpoint, char *post_data)
 	strcpy( keyBuffer, header1);
 	strcat( keyBuffer, _API_KEY);
 
+	printf("API_KEY: %s\n", _API_KEY);
 	//printf( "%s\n", keyBuffer );
 
 	const char *header2 = "Api-Sign:";
@@ -336,10 +337,10 @@ char *api_request(char *endpoint, char *post_data)
 
 int main(void)
 {	
-
-	printf("%s \n", api_request((char*)"/info/account",(char*)"currency=KRW"));
-	//xcoin api request example : (char*)"xcoin=1&currency=btc"
 	
+	char *data;
+	data = api_request((char*)"/info/accout", (char*)"currency=KRW");
+	printf("--%s--\n", data);
 	return 0;
 }
 
