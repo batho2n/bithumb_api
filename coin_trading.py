@@ -82,6 +82,7 @@ def Trading(api, private_params, API):
 	print "Bithumb Private API URI(" + API + ") Request..."
 	
 	result = api.xcoinApiCall(API, private_params)
+	print result
 	if result["status"] != "0000":
 		Print_Api_Error(result)
 		return -1
@@ -130,7 +131,7 @@ if __name__ == '__main__':
 	
 	print "     =====Starting Trading======"
 	print ""
-
+	
 	if trading != "wallet":
 		private_params = {
 			"currency"			: coin,

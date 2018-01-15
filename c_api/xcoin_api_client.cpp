@@ -9,6 +9,8 @@
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 
+#include <json/json.h>
+#include <json/json-forwards.h>
 
 using namespace std;
 
@@ -172,6 +174,8 @@ int hash_sha512(char *hash, const unsigned char *in, const char *secret)
 	HMAC_CTX_cleanup( &ctx );
 
 	hash_bin2hex(hash,(unsigned char*)out, 128/2);
+
+	return 0;
 }
 
 size_t write_data( void *ptr, size_t size, size_t nmemb, struct url_data *data )
@@ -211,7 +215,6 @@ size_t write_data( void *ptr, size_t size, size_t nmemb, struct url_data *data )
 
 char *api_request(char *endpoint, char *post_data)
 {
-
 	char url[strlen(_API_HOST) + strlen(endpoint) + 1];
 	sprintf(url, "%s%s", _API_HOST, endpoint);
 	
@@ -337,10 +340,23 @@ char *api_request(char *endpoint, char *post_data)
 
 int main(void)
 {	
-	
 	char *data;
-	data = api_request((char*)"/info/accout", (char*)"currency=KRW");
+	data = api_request((char*)"/info/balance", (char*)"currency=ETH");
+	//data = api_request((char*)"/public/ticker/ETH", (char*)"");
 	printf("--%s--\n", data);
+
+	Json::Reader reader;
+	Json::Value root;
+	bool parsingRet = reader.parse(data, root);
+	if (!parsingRet)
+	{
+		std::cout << "Failed to parse Json : " << reader.getFormattedErrorMessages();
+		return 0;
+	}
+	std::cout << "Status : " <<  root["status"] << std::endl;
+	std::cout << "Message : " << root["message"] << std::endl << std::endl;
+
+	std::cout << "====Finish Trading====" << std::endl;
 	return 0;
 }
 
