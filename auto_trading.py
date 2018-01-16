@@ -3,7 +3,7 @@
 
 # @brief 	Coint Trading File using XCoin API-call(for Python 2.x, 3.x)
 # @author	batho2n
-# @date		2018.01.14
+# @date		2018.01.16
 #
 # @details
 # First, Build and install pycurl with the following commands::
