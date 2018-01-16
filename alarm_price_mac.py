@@ -31,15 +31,47 @@ import getopt
 import time
 import threading
 
+import pyaudio
+import wave
+import datetime
+import time
+
+
+WAV_FILE = 'alarm.wav'
+
+
 def Usage (argv):
 	print argv + " [options]"
 	print ""
 	print "  [Ex] " + argv + " -t sell -c BTC -u 1.42"
 	print "  [options]"
-	print "      -t		거래 방법 선택 (sell, buy, wallet)"
-	print "      -c		거래 코인 선택 (BTC, ETH, DASH, LTC, ETC, XRP, BCH, "
-	print "        						XMR, ZEC, QTUM, BTG, EOS)"
-	print "      -u		거래량(코인 기준, 거래최소량 있음, 소수4자리까지 가능)"
+	print "      -c		체크 코인 선택 (BTC, ETH, DASH, LTC, ETC, XRP, BCH, "
+	print "        				    XMR, ZEC, QTUM, BTG, EOS)"
+        print "      -k		알람을 알고 싶은 기준선!!! (원화)"
+        print "      -d		오르는걸 체크할건지(over), 내리는걸 체크할건지(under)"
+
+def Play_Wav():
+    #define stream chunk
+    chunk = 1024
+    #open a wav format music  
+    f = wave.open(WAV_FILE,"rb")  
+    #instantiate PyAudio  
+    p = pyaudio.PyAudio()  
+    #open stream  
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()), channels = f.getnchannels(), rate = f.getframerate(), output = True)  
+    #read data  
+    wav_data = f.readframes(chunk)  
+    while wav_data:  
+        stream.write(wav_data)
+        wav_data = f.readframes(chunk)  
+    
+    #stop stream  
+    stream.stop_stream()  
+    stream.close()  
+    
+    #close PyAudio  
+    p.terminate()  
+    return
 
 def Print_Api_Error (result):
 	print "Status: " + str(result["status"])
@@ -87,19 +119,22 @@ if __name__ == '__main__':
 	options, args = getopt.getopt(sys.argv[1:], 'c:k:d:h')
 	for opt, p in options:
 		if opt == '-c':
-			coin = p
+		    coin = p
 		elif opt == '-k':
-			krw = p
+		    krw = p
 		elif opt == '-d':
-			un_over = p
+                    if p == "under" or p == "over":
+                        Usage(sys.argv[0])
+                        sys.exit(0)
+                    else:
+		        un_over = p
 		elif opt == '-h':
-			Usage(sys.argv[0])
-			sys.exit(0)
+		    Usage(sys.argv[0])
+		    sys.exit(0)
 		else:
-			print 'Unknown option'
-			Usage(sys.argv[0])
-			sys.exit(0)
-
+		    print 'Unknown option'
+		    Usage(sys.argv[0])
+		    sys.exit(0)
 
 	print ""
 	print " BITHUMB API Initialization"
@@ -114,12 +149,16 @@ if __name__ == '__main__':
 
 	while 1:
 		err_code, price = Check_Curr_Status(private_params)
-		print coin +" Target: " + krw + " Current Price: " + price
+                kor_time = datetime.datetime.now()
+                print kor_time,
+		print " " + coin +" Target: " + krw + " Current Price: " + price
 		if un_over == "under" and int(price) <= int(krw) :
 			print '%s %s' % ("Under " * 10, "! "*200)
+                        Play_Wave()
 			break
 		elif un_over == "over" and int(price) >= int(krw) :
 			print '%s %s' % ("Over " * 10, "! "*200)
+                        Play_Wave()
 			break
 		time.sleep(2)
 
