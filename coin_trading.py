@@ -85,7 +85,10 @@ def Trading(api, private_params, API):
 	print result
 	if result["status"] != "0000":
 		Print_Api_Error(result)
-		return -1
+                if result["message"] == "Please try again":
+                    return -1
+                else:
+		    return -2
 	else:
 		print "order_id: " + result["order_id"]
 		print "units: " + result["data"][0]["units"]
@@ -146,9 +149,12 @@ if __name__ == '__main__':
 		print " Trading !!! "
 		for i in range(10):
 			err_code = Trading(	api, private_params, API)
-			if err_code != 0:
+			if err_code == -1:                  # Connect error, 다시 시작 GoGo
 				print "[ERR] Trading() " + str(err_code)
 				time.sleep(0.05)
+			elif err_code != 0:                 # Other error, 돈이부족 등 얼른 멈춰
+				print "[ERR] Trading() " + str(err_code)
+                                break
 			else:
 				break
 		
