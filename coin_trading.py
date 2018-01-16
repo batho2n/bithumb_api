@@ -98,11 +98,12 @@ def Trading(api, private_params, API):
 
 if __name__ == '__main__':
 
-	coin = 'XRP'
-	vol = ""
-	sale = ""
-	API = ""
-	unit = ""
+	coin = 'XRP'	# 거래 코인 종류
+	sale = ""		# 주문 방법 sell: 시장가 판매, buy: 시장가 구매, order: 가격책정후 등록, cancel: 등록 구매 취소
+	API = ""		#
+	unit = ""		# 구매및 판매 코인 양소수점 4자리까지
+	krw = ""		# order에서 사용할 코인당 단가
+	how = ""		# order에서 사용할 거래 방법, bid: 살때, ask: 팔때
 	err_code = 0
 	if len(sys.argv) < 5:
 		Usage(sys.argv[0])
@@ -116,6 +117,8 @@ if __name__ == '__main__':
 			unit = p
 		elif opt == '-t':
 			trading = p
+		elif opt == '-k':
+			krw = p
 		elif opt == '-h':
 			Usage(sys.argv[0])
 			sys.exit(0)
@@ -123,6 +126,7 @@ if __name__ == '__main__':
 			print 'Unknown option'
 			Usage(sys.argv[0])
 			sys.exit(0)
+
 
 
 	print ""
@@ -144,6 +148,14 @@ if __name__ == '__main__':
 			API = "/info/market_sell"
 		elif trading == "buy":
 			API = "/info/market_buy"
+		elif trading == "order_sell":
+			API = "/info/order"
+			how = "ask"
+		elif trading == "order_buy":
+			API = "/info/order"
+			how = "bid"
+		elif trading == "cancel":
+			API = "/trade/cancel"
 
 		print ""
 		print " Trading !!! "
@@ -152,7 +164,7 @@ if __name__ == '__main__':
 			if err_code == -1:                  # Connect error, 다시 시작 GoGo
 				print "[ERR] Trading() " + str(err_code)
 				time.sleep(0.05)
-			elif err_code != 0:                 # Other error, 돈이부족 등 얼른 멈춰
+			elif err_code != 0:                 # Other error, 돈이부족, 없는 구매 오더등등 등 얼른 멈춰
 				print "[ERR] Trading() " + str(err_code)
                                 break
 			else:
