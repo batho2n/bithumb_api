@@ -90,7 +90,7 @@ def Check_Curr_Status(private_params):
 		#print "- Sell Price: " + result["data"]["sell_price"]
 		#print "- Buy Price: " + result["data"]["buy_price"]
 		#print ""
-		return 0, str( (int(result["data"]["closing_price"]) + int(result["data"]["sell_price"]) + int(result["data"]["buy_price"])) / 3)
+		return 0, str( int( (int(result["data"]["closing_price"]) + int(result["data"]["sell_price"]) + int(result["data"]["buy_price"])) / 3))
 
 
 def API_Init(api_key, api_secret):
