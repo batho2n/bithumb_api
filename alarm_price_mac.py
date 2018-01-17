@@ -116,6 +116,12 @@ if __name__ == '__main__':
 		Usage(sys.argv[0])
 		sys.exit(0)
 
+        print sys.argv[1]
+        print sys.argv[2]
+        print sys.argv[3]
+        print sys.argv[4]
+        print sys.argv[5]
+        print sys.argv[6]
 	options, args = getopt.getopt(sys.argv[1:], 'c:k:d:h')
 	for opt, p in options:
 		if opt == '-c':
@@ -123,7 +129,7 @@ if __name__ == '__main__':
 		elif opt == '-k':
 		    krw = p
 		elif opt == '-d':
-                    if p == "under" or p == "over":
+                    if p != "under" and p != "over":
                         Usage(sys.argv[0])
                         sys.exit(0)
                     else:
