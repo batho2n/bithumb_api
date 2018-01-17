@@ -116,12 +116,6 @@ if __name__ == '__main__':
 		Usage(sys.argv[0])
 		sys.exit(0)
 
-        print sys.argv[1]
-        print sys.argv[2]
-        print sys.argv[3]
-        print sys.argv[4]
-        print sys.argv[5]
-        print sys.argv[6]
 	options, args = getopt.getopt(sys.argv[1:], 'c:k:d:h')
 	for opt, p in options:
 		if opt == '-c':
@@ -159,14 +153,18 @@ if __name__ == '__main__':
                 print kor_time,
 		print " " + coin +" Target: " + krw + " Current Price: " + price
 		if un_over == "under" and int(price) <= int(krw) :
-			print '%s %s' % ("Under " * 10, "! "*200)
-                        Play_Wave()
+			print '%s' % ("* UNDER *\n" * 120)
+                        Play_Wav()
+                        Play_Wav()
+                        Play_Wav()
 			break
 		elif un_over == "over" and int(price) >= int(krw) :
-			print '%s %s' % ("Over " * 10, "! "*200)
-                        Play_Wave()
+			print '%s' % ("* OVER *\n" * 120)
+                        Play_Wav()
+                        Play_Wav()
+                        Play_Wav()
 			break
-		time.sleep(2)
+		time.sleep(1)
 
 
 	print ""
