@@ -147,24 +147,35 @@ if __name__ == '__main__':
 	print "     =====Starting Checking======"
 	print ""
 
+        init = 1
 	while 1:
 		err_code, price = Check_Curr_Status(private_params)
+                if init == 1:
+                    h_price = price
+
                 kor_time = datetime.datetime.now()
                 print kor_time,
-		print " " + coin +" Target: " + krw + " Current Price: " + price
-		if un_over == "under" and int(price) <= int(krw) :
+                if int(float(price)) - int(float(h_price)) > 0:
+                    print " " + coin +" Target: " + krw + " Current Price: " + price + " ^ "
+                if int(float(price)) - int(float(h_price)) < 0:
+                    print " " + coin +" Target: " + krw + " Current Price: " + price + " v "
+                if int(float(price)) - int(float(h_price)) == 0:
+                    print " " + coin +" Target: " + krw + " Current Price: " + price + " = "
+		if un_over == "under" and int(float(price)) <= int(krw) :
 			print '%s' % ("* UNDER *\n" * 120)
                         Play_Wav()
                         Play_Wav()
                         Play_Wav()
 			break
-		elif un_over == "over" and int(price) >= int(krw) :
+		elif un_over == "over" and int(float(price)) >= int(krw) :
 			print '%s' % ("* OVER *\n" * 120)
                         Play_Wav()
                         Play_Wav()
                         Play_Wav()
 			break
 		time.sleep(1)
+                h_price = price
+                init = 0    #처음임을 알기 위한 변수
 
 
 	print ""
